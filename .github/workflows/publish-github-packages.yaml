@@ -35,7 +35,13 @@ jobs:
         working-directory: ./modal-js
 
       - name: Publish
-        run: npm publish --access public
+        run: |
+          VERSION="$(node -p "require('./package.json').version")"
+          if npm view "@paideia-ai/modal@${VERSION}" --json >/dev/null 2>&1; then
+            echo "Already published: @paideia-ai/modal@${VERSION}"
+            exit 0
+          fi
+          npm publish --access public --tag paideia
         working-directory: ./modal-js
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
